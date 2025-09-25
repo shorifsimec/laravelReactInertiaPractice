@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Student;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class StudentController extends Controller
@@ -32,11 +33,13 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        // Student::create($request->validated());
-        Student::create($request->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'required|email',
-        ]));
+        $validated = $request->validated();
+        $image = $request->file('image')->store('students', 'public');
+        Student::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'image' => $image,
+        ]);
 
         return redirect()->route('students.index');
     }
@@ -66,7 +69,20 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student)
     {
-        $student->update($request->validated());
+        $validated = $request->validated();
+        $image = $student->image;
+        if ($request->hasFile('image')) {
+            if ($student->image) {
+                Storage::disk('public')->delete($student->image);
+            }
+            $image = $request->file('image')->store('students', 'public');
+        }
+
+        $student->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'image' => $image,
+        ]);
 
         return redirect()->route('students.index');
     }
@@ -76,6 +92,9 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        if ($student->image) {
+            Storage::disk('public')->delete($student->image);
+        }
         $student->delete();
 
         return redirect()->route('students.index');

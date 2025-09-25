@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type Student, type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,14 +14,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit({ student }: { student: Student }) {
-    const { data, setData, put, errors } = useForm({
+    const { data, setData, errors } = useForm({
         name: student.name,
         email: student.email,
+        image: null as File | null,
     });
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        put(`/students/${student.id}`);
+        router.post(`/students/${student.id}`, {
+            _method: 'put',
+            ...data,
+        });
     }
 
     return (
@@ -52,6 +56,17 @@ export default function Edit({ student }: { student: Student }) {
                                 className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
                             />
                             {errors.email && <div className="text-red-500">{errors.email}</div>}
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="image" className="mb-2 block">Image</label>
+                            <input
+                                id="image"
+                                type="file"
+                                onChange={(e) => setData('image', e.target.files ? e.target.files[0] : null)}
+                                className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
+                            />
+                            {errors.image && <div className="text-red-500">{errors.image}</div>}
+                            <img src={`/storage/${student.image}`} alt={student.name} className="mt-4 w-32 h-32 object-cover rounded-full" />
                         </div>
                         <button type="submit" className="btn btn-primary">
                             Update

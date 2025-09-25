@@ -17,6 +17,7 @@ export default function Create() {
     const { data, setData, post, errors } = useForm({
         name: '',
         email: '',
+        image: null as File | null,
     });
 
     function handleSubmit(e: React.FormEvent) {
@@ -52,6 +53,16 @@ export default function Create() {
                                 className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
                             />
                             {errors.email && <div className="text-red-500">{errors.email}</div>}
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="image" className="mb-2 block">Image</label>
+                            <input
+                                id="image"
+                                type="file"
+                                onChange={(e) => setData('image', e.target.files ? e.target.files[0] : null)}
+                                className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
+                            />
+                            {errors.image && <div className="text-red-500">{errors.image}</div>}
                         </div>
                         <button type="submit" className="btn btn-primary">
                             Create

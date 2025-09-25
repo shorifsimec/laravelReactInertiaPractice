@@ -46,6 +46,7 @@ export interface Student {
     id: number;
     name: string;
     email: string;
+    image: string;
     created_at: string;
     updated_at: string;
 }

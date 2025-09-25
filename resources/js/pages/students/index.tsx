@@ -24,6 +24,7 @@ export default function Index({ students }: { students: Student[] }) {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-sidebar-border/70 dark:border-sidebar-border">
+                                <th className="p-4 text-left">Image</th>
                                 <th className="p-4 text-left">Name</th>
                                 <th className="p-4 text-left">Email</th>
                                 <th className="p-4 text-left"></th>
@@ -32,6 +33,9 @@ export default function Index({ students }: { students: Student[] }) {
                         <tbody>
                             {students.map((student) => (
                                 <tr key={student.id} className="border-b border-sidebar-border/70 dark:border-sidebar-border">
+                                    <td className="p-4">
+                                        <img src={`/storage/${student.image}`} alt={student.name} className="w-16 h-16 object-cover rounded-full" />
+                                    </td>
                                     <td className="p-4">{student.name}</td>
                                     <td className="p-4">{student.email}</td>
                                     <td className="p-4 text-right">
