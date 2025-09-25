@@ -15,5 +15,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('students', StudentController::class);
 });
 
+Route::get('/students/{student}/files/{fileIndex}/download', [StudentController::class, 'downloadFile'])
+    ->name('students.file.download');
+
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

@@ -38,7 +38,10 @@ class StudentController extends Controller
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('student-files', 'public');
-                $files[] = $path;
+                $files[] = [
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                ];
             }
         }
 
@@ -82,51 +85,65 @@ class StudentController extends Controller
             $image = $request->file('image')->store('students', 'public');
         }
 
-        $currentFiles = $student->files ?? [];
-        $newFiles = [];
-        $filesToKeep = [];
+        $currentFiles = $student->files ?? []; // This will now be an array of objects
+        $filesToKeep = []; // Will store objects {path, original_name}
+        $newlyUploadedFiles = []; // Will store objects {path, original_name}
 
-        // Process files from the request
-        // Ensure 'files' input is an array, defaulting to empty array if null
+        // Process files from the request (these are the files the frontend wants to keep/add)
         $requestedFiles = $request->input('files', []);
         if (!is_array($requestedFiles)) {
-            $requestedFiles = []; // Ensure it's an array even if it's a single non-array value
+            $requestedFiles = [];
         }
 
         foreach ($requestedFiles as $file) {
-            // If it's a string, it's an existing file path to keep
-            if (is_string($file)) {
+            // If it's an array, it's an existing file object {path, original_name} to keep
+            if (is_array($file) && isset($file['path']) && isset($file['original_name'])) {
                 $filesToKeep[] = $file;
             }
         }
 
-        // Handle newly uploaded files
+        // Handle newly uploaded files (these are actual UploadedFile instances)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
                     $path = $file->store('student-files', 'public');
-                    $newFiles[] = $path;
+                    $newlyUploadedFiles[] = [
+                        'path' => $path,
+                        'original_name' => $file->getClientOriginalName(),
+                    ];
                 }
             }
         }
 
-        // Identify files to delete (those in currentFiles but not in filesToKeep)
-        $filesToDelete = array_diff($currentFiles, $filesToKeep);
-        foreach ($filesToDelete as $file) {
-            Storage::disk('public')->delete($file);
+        // Identify files to delete
+        // Get paths of files that were originally on the student record
+        $currentFilePaths = array_column($currentFiles, 'path');
+        // Get paths of files that the frontend wants to keep
+        $filesToKeepPaths = array_column($filesToKeep, 'path');
+
+        $filesToDeletePaths = array_diff($currentFilePaths, $filesToKeepPaths);
+
+        foreach ($filesToDeletePaths as $path) {
+            Storage::disk('public')->delete($path);
         }
 
         // Combine files to keep and newly uploaded files
-        $updatedFiles = array_merge($filesToKeep, $newFiles);
+        $updatedFiles = array_merge($filesToKeep, $newlyUploadedFiles);
 
-        $student->update([
+        $updated = $student->update([
             'name' => $request->name,
             'email' => $request->email,
             'image' => $image,
             'files' => $updatedFiles,
         ]);
 
-        return to_route('students.index');
+        // If no attributes were changed by the update method, explicitly touch the model
+        // to ensure the 'updated_at' timestamp is updated.
+        if (!$updated) {
+            $student->touch();
+        }
+
+        return to_route('students.index')->with('success', 'Student updated successfully.');
     }
 
     /**

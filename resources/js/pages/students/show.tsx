@@ -40,8 +40,8 @@ export default function Show({ student }: { student: Student }) {
                             <ul className="list-disc pl-5">
                                 {student.files.map((file, index) => (
                                     <li key={index} className="flex items-center gap-2">
-                                        <a href={`/storage/${file}`} target="_blank" rel="noopener noreferrer">
-                                            {file.split('/').pop()}
+                                        <a href={`/storage/${file.path}`} target="_blank" rel="noopener noreferrer">
+                                            {file.original_name}
                                         </a>
                                     </li>
                                 ))}

@@ -14,20 +14,25 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create() {
-    const { data, setData, post, errors } = useForm({
+    const { data, setData, post, errors } = useForm<{
+        name: string;
+        email: string;
+        image: File | null;
+        files: File[];
+    }>({
         name: '',
         email: '',
-        image: null as File | null,
-        files: [] as File[],
+        image: null,
+        files: [],
     });
-
-    const handleRemoveFile = (indexToRemove: number) => {
-        setData('files', data.files.filter((_, index) => index !== indexToRemove));
-    };
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         post('/students', { forceFormData: true });
+    }
+
+    function handleRemoveFile(index: number) {
+        setData('files', data.files.filter((_, i) => i !== index));
     }
 
     return (
@@ -37,6 +42,7 @@ export default function Create() {
                 <h1 className="text-2xl font-semibold">Create Student</h1>
                 <div className="rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border">
                     <form onSubmit={handleSubmit}>
+                        {/* Name */}
                         <div className="mb-4">
                             <label htmlFor="name" className="mb-2 block">Name</label>
                             <input
@@ -48,6 +54,8 @@ export default function Create() {
                             />
                             {errors.name && <div className="text-red-500">{errors.name}</div>}
                         </div>
+
+                        {/* Email */}
                         <div className="mb-4">
                             <label htmlFor="email" className="mb-2 block">Email</label>
                             <input
@@ -59,6 +67,8 @@ export default function Create() {
                             />
                             {errors.email && <div className="text-red-500">{errors.email}</div>}
                         </div>
+
+                        {/* Image */}
                         <div className="mb-4">
                             <label htmlFor="image" className="mb-2 block">Image</label>
                             <input
@@ -69,16 +79,22 @@ export default function Create() {
                             />
                             {errors.image && <div className="text-red-500">{errors.image}</div>}
                         </div>
+
+                        {/* Files */}
                         <div className="mb-4">
                             <label htmlFor="files" className="mb-2 block">Files</label>
                             <input
                                 id="files"
                                 type="file"
                                 multiple
-                                onChange={(e) => setData('files', [...data.files, ...Array.from(e.target.files || [])])}
+                                onChange={(e) => {
+                                    const newFiles = Array.from(e.target.files || []);
+                                    setData('files', [...data.files, ...newFiles]);
+                                }}
                                 className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
                             />
                             {errors.files && <div className="text-red-500">{errors.files}</div>}
+
                             {data.files.length > 0 && (
                                 <div className="mt-4">
                                     <p className="font-semibold">Selected files:</p>
@@ -99,6 +115,8 @@ export default function Create() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Submit */}
                         <button type="submit" className="btn btn-primary">
                             Create
                         </button>
