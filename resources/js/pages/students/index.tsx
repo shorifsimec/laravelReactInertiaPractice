@@ -27,6 +27,7 @@ export default function Index({ students }: { students: Student[] }) {
                                 <th className="p-4 text-left">Image</th>
                                 <th className="p-4 text-left">Name</th>
                                 <th className="p-4 text-left">Email</th>
+                                <th className="p-4 text-left">Files</th>
                                 <th className="p-4 text-left"></th>
                             </tr>
                         </thead>
@@ -38,6 +39,7 @@ export default function Index({ students }: { students: Student[] }) {
                                     </td>
                                     <td className="p-4">{student.name}</td>
                                     <td className="p-4">{student.email}</td>
+                                    <td className="p-4">{student.files?.length || 0}</td>
                                     <td className="p-4 text-right">
                                         <Link href={`/students/${student.id}/edit`} className="btn btn-secondary mr-2">
                                             Edit

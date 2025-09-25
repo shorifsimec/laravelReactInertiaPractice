@@ -33,20 +33,25 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        $validated = $request->validated();
-        $image = $request->file('image')->store('students', 'public');
+        $image = $request->file('image')?->store('students', 'public');
+        $files = [];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('student-files', 'public');
+                $files[] = $path;
+            }
+        }
+
         Student::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name' => $request->name,
+            'email' => $request->email,
             'image' => $image,
+            'files' => $files,
         ]);
 
-        return redirect()->route('students.index');
+        return to_route('students.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Student $student)
     {
         return Inertia::render('students/show', [
@@ -69,22 +74,59 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student)
     {
-        $validated = $request->validated();
         $image = $student->image;
-        if ($request->hasFile('image')) {
+        if ($request->file('image')) {
             if ($student->image) {
                 Storage::disk('public')->delete($student->image);
             }
             $image = $request->file('image')->store('students', 'public');
         }
 
+        $currentFiles = $student->files ?? [];
+        $newFiles = [];
+        $filesToKeep = [];
+
+        // Process files from the request
+        // Ensure 'files' input is an array, defaulting to empty array if null
+        $requestedFiles = $request->input('files', []);
+        if (!is_array($requestedFiles)) {
+            $requestedFiles = []; // Ensure it's an array even if it's a single non-array value
+        }
+
+        foreach ($requestedFiles as $file) {
+            // If it's a string, it's an existing file path to keep
+            if (is_string($file)) {
+                $filesToKeep[] = $file;
+            }
+        }
+
+        // Handle newly uploaded files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    $path = $file->store('student-files', 'public');
+                    $newFiles[] = $path;
+                }
+            }
+        }
+
+        // Identify files to delete (those in currentFiles but not in filesToKeep)
+        $filesToDelete = array_diff($currentFiles, $filesToKeep);
+        foreach ($filesToDelete as $file) {
+            Storage::disk('public')->delete($file);
+        }
+
+        // Combine files to keep and newly uploaded files
+        $updatedFiles = array_merge($filesToKeep, $newFiles);
+
         $student->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name' => $request->name,
+            'email' => $request->email,
             'image' => $image,
+            'files' => $updatedFiles,
         ]);
 
-        return redirect()->route('students.index');
+        return to_route('students.index');
     }
 
     /**

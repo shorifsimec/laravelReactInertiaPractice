@@ -25,6 +25,8 @@ class StoreStudentRequest extends FormRequest
             'name' => 'nullable|string|max:255',
             'email' => 'required|email',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'files' => 'nullable|array',
+            'files.*' => 'file|mimes:pdf,doc,docx,xl,xls,xlsx|max:2048',
         ];
     }
 }

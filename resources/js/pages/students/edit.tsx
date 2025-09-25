@@ -18,12 +18,18 @@ export default function Edit({ student }: { student: Student }) {
         name: student.name,
         email: student.email,
         image: null as File | null,
+        files: (student.files || []) as (File | string)[],
     });
+
+    const handleRemoveFile = (indexToRemove: number) => {
+        setData('files', data.files.filter((_, index) => index !== indexToRemove));
+    };
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         router.post(`/students/${student.id}`, {
             _method: 'put',
+            forceFormData: true,
             ...data,
         });
     }
@@ -67,6 +73,42 @@ export default function Edit({ student }: { student: Student }) {
                             />
                             {errors.image && <div className="text-red-500">{errors.image}</div>}
                             <img src={`/storage/${student.image}`} alt={student.name} className="mt-4 w-32 h-32 object-cover rounded-full" />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="files" className="mb-2 block">Files</label>
+                            <input
+                                id="files"
+                                type="file"
+                                multiple
+                                onChange={(e) => setData('files', [...data.files, ...Array.from(e.target.files || [])])}
+                                className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
+                            />
+                            {errors.files && <div className="text-red-500">{errors.files}</div>}
+                            {data.files.length > 0 && (
+                                <div className="mt-4">
+                                    <p className="font-semibold">Current files:</p>
+                                    <ul className="list-disc pl-5">
+                                        {data.files.map((file, index) => (
+                                            <li key={index} className="flex items-center gap-2">
+                                                {typeof file === 'string' ? (
+                                                    <a href={`/storage/${file}`} target="_blank" rel="noopener noreferrer">
+                                                        {file.split('/').pop()}
+                                                    </a>
+                                                ) : (
+                                                    <span>{file.name}</span>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveFile(index)}
+                                                    className="text-red-500 hover:text-red-700 ml-2"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                         <button type="submit" className="btn btn-primary">
                             Update

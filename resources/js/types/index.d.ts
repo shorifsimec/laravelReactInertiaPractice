@@ -47,6 +47,7 @@ export interface Student {
     name: string;
     email: string;
     image: string;
+    files: string[];
     created_at: string;
     updated_at: string;
 }

@@ -16,6 +16,11 @@ class Student extends Model
         'name',
         'email',
         'image',
+        'files',
+    ];
+
+    protected $casts = [
+        'files' => 'array',
     ];
     use HasFactory;
 }

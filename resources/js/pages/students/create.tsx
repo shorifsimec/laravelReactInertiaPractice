@@ -18,11 +18,16 @@ export default function Create() {
         name: '',
         email: '',
         image: null as File | null,
+        files: [] as File[],
     });
+
+    const handleRemoveFile = (indexToRemove: number) => {
+        setData('files', data.files.filter((_, index) => index !== indexToRemove));
+    };
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        post('/students');
+        post('/students', { forceFormData: true });
     }
 
     return (
@@ -63,6 +68,36 @@ export default function Create() {
                                 className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
                             />
                             {errors.image && <div className="text-red-500">{errors.image}</div>}
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="files" className="mb-2 block">Files</label>
+                            <input
+                                id="files"
+                                type="file"
+                                multiple
+                                onChange={(e) => setData('files', [...data.files, ...Array.from(e.target.files || [])])}
+                                className="w-full rounded-md border-sidebar-border/70 bg-transparent dark:border-sidebar-border"
+                            />
+                            {errors.files && <div className="text-red-500">{errors.files}</div>}
+                            {data.files.length > 0 && (
+                                <div className="mt-4">
+                                    <p className="font-semibold">Selected files:</p>
+                                    <ul className="list-disc pl-5">
+                                        {data.files.map((file, index) => (
+                                            <li key={index} className="flex items-center gap-2">
+                                                <span>{file.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveFile(index)}
+                                                    className="text-red-500 hover:text-red-700 ml-2"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                         <button type="submit" className="btn btn-primary">
                             Create
