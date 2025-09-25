@@ -41,6 +41,9 @@ export default function Index({ students }: { students: Student[] }) {
                                     <td className="p-4">{student.email}</td>
                                     <td className="p-4">{student.files?.length || 0}</td>
                                     <td className="p-4 text-right">
+                                        <Link href={`/students/${student.id}`} className="btn btn-info mr-2">
+                                            Show
+                                        </Link>
                                         <Link href={`/students/${student.id}/edit`} className="btn btn-secondary mr-2">
                                             Edit
                                         </Link>
