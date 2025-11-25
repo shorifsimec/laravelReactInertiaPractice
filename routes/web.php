@@ -13,6 +13,12 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
     Route::resource('students', StudentController::class);
+    Route::get('contact/public-message', function () {
+        return Inertia::render('contact/public-message');
+    })->name('contact.public-message');
+    Route::get('contact/contact-us', function () {
+        return Inertia::render('contact/contact-us');
+    })->name('contact.contact-us');
 });
 
 Route::get('/students/{student}/files/{fileIndex}/download', [StudentController::class, 'downloadFile'])
