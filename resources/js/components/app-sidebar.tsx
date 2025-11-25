@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 
 import { Link, usePage } from "@inertiajs/react";
-import { ChevronDown, LayoutGrid, Users, MessageSquare } from "lucide-react";
+import { ChevronDown, LayoutGrid, Users, MessageSquare, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import AppLogo from './app-logo';
 import { NavUser } from './nav-user';
@@ -94,7 +94,16 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                {/* <NavFooter /> */}
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <a href={window.location.origin} target="_blank">
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                Visit Site
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
