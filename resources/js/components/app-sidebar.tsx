@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/sidebar';
 
 import { Link, usePage } from "@inertiajs/react";
-import { ChevronDown, LayoutGrid, Users, MessageSquare, ExternalLink } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronDown, ExternalLink, LayoutGrid, MessageSquare, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import AppLogo from './app-logo';
 import { NavUser } from './nav-user';
 
@@ -22,7 +22,7 @@ export function AppSidebar() {
     const [openContact, setOpenContact] = useState(false);
 
     useEffect(() => {
-        if (url.startsWith('/contact')) {
+        if (url.startsWith('/admin/contact')) {
             setOpenContact(true);
         }
     }, [url]);
@@ -34,7 +34,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard">
+                            <Link href="/admin/dashboard">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -46,8 +46,8 @@ export function AppSidebar() {
                 <SidebarMenu>
                     {/* Regular Item */}
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={url.startsWith('/dashboard')}>
-                            <Link href="/dashboard">
+                        <SidebarMenuButton asChild isActive={url.startsWith('/admin/dashboard')}>
+                            <Link href="/admin/dashboard">
                                 <LayoutGrid className="mr-2 h-4 w-4" />
                                 Dashboard
                             </Link>
@@ -56,8 +56,8 @@ export function AppSidebar() {
 
                     {/* Regular Item for Students */}
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={url.startsWith('/students')}>
-                            <Link href="/students">
+                        <SidebarMenuButton asChild isActive={url.startsWith('/admin/students')}>
+                            <Link href="/admin/students">
                                 <Users className="mr-2 h-4 w-4" />
                                 Students
                             </Link>
@@ -65,7 +65,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
 
                     <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => setOpenContact(!openContact)} isActive={url.startsWith('/contact')}>
+                        <SidebarMenuButton onClick={() => setOpenContact(!openContact)} isActive={url.startsWith('/admin/contact')}>
                             <MessageSquare className="mr-2 h-4 w-4" />
                             Contact
                             <ChevronDown
@@ -77,14 +77,14 @@ export function AppSidebar() {
                         {openContact && (
                             <SidebarMenuSub>
                                 <SidebarMenuSubItem>
-                                    <SidebarMenuSubButton asChild isActive={url === '/contact/public-message'}>
-                                        <Link href="/contact/public-message">Public Message</Link>
+                                    <SidebarMenuSubButton asChild isActive={url === '/admin/contact/public-message'}>
+                                        <Link href="/admin/contact/public-message">Public Message</Link>
                                     </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
 
                                 <SidebarMenuSubItem>
-                                    <SidebarMenuSubButton asChild isActive={url === '/contact/contact-us'}>
-                                        <Link href="/contact/contact-us">Contact Us</Link>
+                                    <SidebarMenuSubButton asChild isActive={url === '/admin/contact/contact-us'}>
+                                        <Link href="/admin/contact/contact-us">Contact Us</Link>
                                     </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                             </SidebarMenuSub>

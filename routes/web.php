@@ -8,14 +8,24 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::middleware(['auth'])->group(function () {
+Route::get('/contact', function () {
+    return Inertia::render('contact/contact-us');
+})->name('contact');
+
+Route::get('/about', function () {
+    return Inertia::render('about/about-us');
+})->name('about');
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
     Route::resource('students', StudentController::class);
+
     Route::get('contact/public-message', function () {
         return Inertia::render('contact/public-message');
     })->name('contact.public-message');
+
     Route::get('contact/contact-us', function () {
         return Inertia::render('contact/contact-us');
     })->name('contact.contact-us');
