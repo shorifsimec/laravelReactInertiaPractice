@@ -19,13 +19,9 @@ import { NavUser } from './nav-user';
 
 export function AppSidebar() {
     const { url } = usePage();
-    const [openStudents, setOpenStudents] = useState(false);
     const [openContact, setOpenContact] = useState(false);
 
     useEffect(() => {
-        if (url.startsWith('/students')) {
-            setOpenStudents(true);
-        }
         if (url.startsWith('/contact')) {
             setOpenContact(true);
         }
@@ -58,33 +54,16 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
 
-                    {/* 🔽 DROPDOWN MENU */}
+                    {/* Regular Item for Students */}
                     <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => setOpenStudents(!openStudents)} isActive={url.startsWith('/students')}>
-                            <Users className="mr-2 h-4 w-4" />
-                            Students
-                            <ChevronDown
-                                className={`ml-auto h-4 w-4 transition-transform ${openStudents ? "rotate-180" : ""
-                                    }`}
-                            />
+                        <SidebarMenuButton asChild isActive={url.startsWith('/students')}>
+                            <Link href="/students">
+                                <Users className="mr-2 h-4 w-4" />
+                                Students
+                            </Link>
                         </SidebarMenuButton>
-
-                        {openStudents && (
-                            <SidebarMenuSub>
-                                <SidebarMenuSubItem>
-                                    <SidebarMenuSubButton asChild isActive={url === '/students'}>
-                                        <Link href="/students">All Students</Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-
-                                <SidebarMenuSubItem>
-                                    <SidebarMenuSubButton asChild isActive={url === '/students/create'}>
-                                        <Link href="/students/create">Add Student</Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            </SidebarMenuSub>
-                        )}
                     </SidebarMenuItem>
+
                     <SidebarMenuItem>
                         <SidebarMenuButton onClick={() => setOpenContact(!openContact)} isActive={url.startsWith('/contact')}>
                             <MessageSquare className="mr-2 h-4 w-4" />
